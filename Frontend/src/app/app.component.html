@@ -1,0 +1,88 @@
+<div class="hero">
+	<div class="wrapper">
+		<img src="/assets/logo.svg">
+	</div>
+</div>
+<div class="filters">
+	<div class="wrapper">
+		<h2>European Restaurants</h2>
+		<form [formGroup]="filtersForm">
+			<div class="show-filters">
+				<img (click)="showFilters()" src="/assets/filter-icon.png">
+			</div>
+			<div class="search">
+				<input (keydown)="removeAutocomplete()" class="form-control" placeholder="Search (by Name or Cuisine)" formControlName="searchText" type="text">
+				<span class="clear-search" (click)="clearSearch()"><img src="/assets/clear.png"></span>
+				<ul (blur)="removeAutocomplete()" *ngIf="searchResults != null" class="filter-select">
+					<li *ngFor="let result of searchResults" (click)="setSearch(result.Name)"> {{ result.Name }}</li>
+				</ul>
+			</div>
+			<div *ngIf="showingFilters" class="additional-filters">
+				<select (change)="filterChange()" name="city" class="form-control" formControlName="city">
+					<option value="nocity">- Select City -</option>
+					<option *ngFor="let city of Cities" value="{{ city }}">
+						{{ city }}
+					</option>
+				</select>
+				<select (change)="filterChange()" name="cuisine" class="form-control" formControlName="cuisine">
+					<option value="nocuisine">- Select Cuisine -</option>
+					<option *ngFor="let cuisine of Cuisines" value="{{ cuisine }}">
+						{{ cuisine }}
+					</option>
+				</select>
+				<select (change)="filterChange()" name="sortby" class="form-control" formControlName="sortby">
+					<option value="nosort">- Sort By -</option>
+					<option value="rating-high">Rating - High</option>
+					<option value="rating-low">Rating - Low</option>
+					<option value="ranking-high">Ranking - High</option>
+					<option value="ranking-low">Ranking - Low</option>
+				</select>
+			</div>
+		</form>
+	</div>
+</div>
+<div *ngIf="!loaded" class="food-loading">
+	<div class="wrapper">
+		<img src="/assets/food-loading.gif">
+		Food Loading...
+	</div>
+</div>
+<div *ngIf="loaded" class="restaurants">
+	<div class="wrapper">
+		<div class="restaurants-list">
+			<div class="resto" *ngFor="let resto of Restaurants">
+				<div class="image" [ngStyle]="{'background-image': 'url(/assets/dummy-restaurant.jpg)'}">
+				</div>
+				<div class="content">
+					<h3>{{ resto.Name }}</h3>
+					<h5>{{ resto.City}}</h5>
+					<ul>
+						<li *ngFor="let cuisine of getCuisineArray(resto['Cuisine Style'])"> {{ cuisine }}</li>
+					</ul>
+					<span class="rating"><img src="/assets/star-green.png">{{ resto.Rating }}</span>
+					<div class="reviews">
+						<span *ngIf="resto['Number of Reviews']" class="column">
+							{{ resto['Number of Reviews'] }} Reviews
+						</span>
+						<span *ngIf="!resto['Number of Reviews']" class="column">
+							0 Reviews
+						</span>
+						<span *ngIf="resto.Ranking" class="column">
+							<b>Rank :</b>
+							<span class="rank">{{ resto.Ranking }}</span>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="pagination">
+			<button [ngClass]="{'disable' : currentPage == 1 }" (click)="checkCurrentPage(currentPage-1)">
+				<img src="/assets/left.png">
+			</button>
+			{{currentPage}}
+			<button [ngClass]="{'disable' : currentPage >= pagesCount }" (click)="checkCurrentPage(currentPage+1)">
+				<img src="/assets/right.png">
+			</button>
+		</div>
+	</div>
+</div>
